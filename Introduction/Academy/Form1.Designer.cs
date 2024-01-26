@@ -37,15 +37,17 @@
 			this.btnAdd = new System.Windows.Forms.Button();
 			this.dgvStudents = new System.Windows.Forms.DataGridView();
 			this.cbGroup = new System.Windows.Forms.ComboBox();
-			this.tabPageTeacheres = new System.Windows.Forms.TabPage();
 			this.tabPageGroups = new System.Windows.Forms.TabPage();
-			this.dataGridView1 = new System.Windows.Forms.DataGridView();
+			this.lblGroupsCount = new System.Windows.Forms.Label();
+			this.cbDirectionOnGroupTab = new System.Windows.Forms.ComboBox();
 			this.btnGroupAdd = new System.Windows.Forms.Button();
+			this.dataGridViewGroups = new System.Windows.Forms.DataGridView();
+			this.tabPageTeacheres = new System.Windows.Forms.TabPage();
 			this.tabControl.SuspendLayout();
 			this.tabPageStudents.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvStudents)).BeginInit();
 			this.tabPageGroups.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.dataGridViewGroups)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// tabControl
@@ -137,6 +139,7 @@
 			this.dgvStudents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.dgvStudents.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
 			this.dgvStudents.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.dgvStudents.Location = new System.Drawing.Point(7, 61);
 			this.dgvStudents.Name = "dgvStudents";
@@ -152,6 +155,56 @@
 			this.cbGroup.TabIndex = 0;
 			this.cbGroup.SelectedIndexChanged += new System.EventHandler(this.cbGroup_SelectedIndexChanged);
 			// 
+			// tabPageGroups
+			// 
+			this.tabPageGroups.BackColor = System.Drawing.SystemColors.Control;
+			this.tabPageGroups.Controls.Add(this.lblGroupsCount);
+			this.tabPageGroups.Controls.Add(this.cbDirectionOnGroupTab);
+			this.tabPageGroups.Controls.Add(this.btnGroupAdd);
+			this.tabPageGroups.Controls.Add(this.dataGridViewGroups);
+			this.tabPageGroups.Location = new System.Drawing.Point(4, 22);
+			this.tabPageGroups.Name = "tabPageGroups";
+			this.tabPageGroups.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPageGroups.Size = new System.Drawing.Size(768, 400);
+			this.tabPageGroups.TabIndex = 2;
+			this.tabPageGroups.Text = "Группы";
+			// 
+			// lblGroupsCount
+			// 
+			this.lblGroupsCount.AutoSize = true;
+			this.lblGroupsCount.Location = new System.Drawing.Point(375, 10);
+			this.lblGroupsCount.Name = "lblGroupsCount";
+			this.lblGroupsCount.Size = new System.Drawing.Size(100, 13);
+			this.lblGroupsCount.TabIndex = 3;
+			this.lblGroupsCount.Text = "Количество групп:";
+			// 
+			// cbDirectionOnGroupTab
+			// 
+			this.cbDirectionOnGroupTab.FormattingEnabled = true;
+			this.cbDirectionOnGroupTab.Location = new System.Drawing.Point(7, 6);
+			this.cbDirectionOnGroupTab.Name = "cbDirectionOnGroupTab";
+			this.cbDirectionOnGroupTab.Size = new System.Drawing.Size(361, 21);
+			this.cbDirectionOnGroupTab.TabIndex = 2;
+			this.cbDirectionOnGroupTab.SelectedIndexChanged += new System.EventHandler(this.cbDirectionOnGroupTab_SelectedIndexChanged);
+			// 
+			// btnGroupAdd
+			// 
+			this.btnGroupAdd.Location = new System.Drawing.Point(687, 5);
+			this.btnGroupAdd.Name = "btnGroupAdd";
+			this.btnGroupAdd.Size = new System.Drawing.Size(75, 23);
+			this.btnGroupAdd.TabIndex = 1;
+			this.btnGroupAdd.Text = "Добавить";
+			this.btnGroupAdd.UseVisualStyleBackColor = true;
+			this.btnGroupAdd.Click += new System.EventHandler(this.btnGroupAdd_Click);
+			// 
+			// dataGridViewGroups
+			// 
+			this.dataGridViewGroups.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.dataGridViewGroups.Location = new System.Drawing.Point(7, 40);
+			this.dataGridViewGroups.Name = "dataGridViewGroups";
+			this.dataGridViewGroups.Size = new System.Drawing.Size(758, 357);
+			this.dataGridViewGroups.TabIndex = 0;
+			// 
 			// tabPageTeacheres
 			// 
 			this.tabPageTeacheres.Location = new System.Drawing.Point(4, 22);
@@ -161,35 +214,6 @@
 			this.tabPageTeacheres.TabIndex = 1;
 			this.tabPageTeacheres.Text = "Преподаватели";
 			this.tabPageTeacheres.UseVisualStyleBackColor = true;
-			// 
-			// tabPageGroups
-			// 
-			this.tabPageGroups.BackColor = System.Drawing.SystemColors.Control;
-			this.tabPageGroups.Controls.Add(this.btnGroupAdd);
-			this.tabPageGroups.Controls.Add(this.dataGridView1);
-			this.tabPageGroups.Location = new System.Drawing.Point(4, 22);
-			this.tabPageGroups.Name = "tabPageGroups";
-			this.tabPageGroups.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPageGroups.Size = new System.Drawing.Size(768, 400);
-			this.tabPageGroups.TabIndex = 2;
-			this.tabPageGroups.Text = "Группы";
-			// 
-			// dataGridView1
-			// 
-			this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.dataGridView1.Location = new System.Drawing.Point(7, 40);
-			this.dataGridView1.Name = "dataGridView1";
-			this.dataGridView1.Size = new System.Drawing.Size(758, 357);
-			this.dataGridView1.TabIndex = 0;
-			// 
-			// btnGroupAdd
-			// 
-			this.btnGroupAdd.Location = new System.Drawing.Point(687, 11);
-			this.btnGroupAdd.Name = "btnGroupAdd";
-			this.btnGroupAdd.Size = new System.Drawing.Size(75, 23);
-			this.btnGroupAdd.TabIndex = 1;
-			this.btnGroupAdd.Text = "Добавить";
-			this.btnGroupAdd.UseVisualStyleBackColor = true;
 			// 
 			// Form1
 			// 
@@ -204,7 +228,8 @@
 			this.tabPageStudents.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvStudents)).EndInit();
 			this.tabPageGroups.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+			this.tabPageGroups.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dataGridViewGroups)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -223,7 +248,9 @@
 		private System.Windows.Forms.RadioButton rbGroups;
 		private System.Windows.Forms.TabPage tabPageGroups;
 		private System.Windows.Forms.Button btnGroupAdd;
-		private System.Windows.Forms.DataGridView dataGridView1;
+		private System.Windows.Forms.DataGridView dataGridViewGroups;
+		private System.Windows.Forms.ComboBox cbDirectionOnGroupTab;
+		private System.Windows.Forms.Label lblGroupsCount;
 	}
 }
 
