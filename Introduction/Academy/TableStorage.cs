@@ -16,11 +16,14 @@ namespace Academy
 		DataSet set;
 		SqlCommandBuilder builder;
 		public DataSet Set { get => set; }
+		public SqlDataAdapter Adapter { get => adapter; }
 		public TableStorage()
 		{
 			string connectionString = ConfigurationManager.ConnectionStrings["MyConnectionString"].ConnectionString;
 			connection = new SqlConnection(connectionString);
 			set = new DataSet();
+			//adapter = new SqlDataAdapter();
+			//builder = new SqlCommandBuilder(adapter);
 		}
 		public void GetDataFromBase(string table)
 		{
@@ -29,6 +32,7 @@ namespace Academy
 				string cmd = $"SELECT * FROM {table}";
 				adapter = new SqlDataAdapter(cmd, connection);
 				builder = new SqlCommandBuilder(adapter);
+				//adapter.SelectCommand.CommandText = cmd;
 				adapter.Fill(set, table);
 			}
 			catch (Exception e)
@@ -43,6 +47,7 @@ namespace Academy
 				string cmd = $"SELECT {columns} FROM {tables} WHERE {condition}";
 				adapter = new SqlDataAdapter(cmd, connection);
 				builder = new SqlCommandBuilder(adapter);
+				//adapter.SelectCommand.CommandText = cmd;
 				adapter.Fill(set);
 			}
 			catch (Exception e)
@@ -50,6 +55,11 @@ namespace Academy
 				throw e;
 			}
 		}
-
+		public void Insert(string cmd)
+		{
+			adapter.InsertCommand = new SqlCommand(cmd, connection);
+			//adapter.InsertCommand.ExecuteNonQuery();
+			adapter.Update(set);
+		}
 	}
 }

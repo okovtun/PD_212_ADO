@@ -326,8 +326,19 @@ FROM Groups JOIN Directions ON direction=direction_id
 			DialogResult result = add.ShowDialog();
 			if (result == DialogResult.OK)
 			{
-
+				//TableStorage storage = new TableStorage();
+				//storage.GetDataFromBase("Groups,Directions", "group_name,direction_name")
+				cbDirectionOnGroupTab_SelectedIndexChanged(sender, e);
 			}
+		}
+
+		private void btnDelete_Click(object sender, EventArgs e)
+		{
+			TableStorage storage = new TableStorage();
+			storage.GetDataFromBase("Groups,Directions", "group_name, direction_name", "direction=direction_id");
+			dataGridViewGroups.DataSource = storage.Set.Tables[0];
+
+			storage.Adapter.Update(storage.Set);
 		}
 	}
 }
