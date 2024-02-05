@@ -44,7 +44,7 @@ namespace Academy
 		{
 			try
 			{
-				string cmd = $"SELECT {columns} FROM {tables} WHERE {condition}";
+				string cmd = $"SELECT DISTINCT {columns} FROM {tables} WHERE {condition}";
 				adapter = new SqlDataAdapter(cmd, connection);
 				builder = new SqlCommandBuilder(adapter);
 				//adapter.SelectCommand.CommandText = cmd;

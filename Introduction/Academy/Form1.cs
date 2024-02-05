@@ -49,9 +49,9 @@ namespace Academy
 		}
 		public void LoadDataToComboBox
 			(
-			System.Windows.Forms.ComboBox comboBox, 
-			string sourceTable, 
-			string sourceColumn, 
+			System.Windows.Forms.ComboBox comboBox,
+			string sourceTable,
+			string sourceColumn,
 			string invite = "Выберте значение",
 			string condition = null
 			)
@@ -94,7 +94,7 @@ namespace Academy
 		}
 		public void SelectDataFromTable
 			(
-			System.Windows.Forms.DataGridView dataGridView, 
+			System.Windows.Forms.DataGridView dataGridView,
 			string commandLine
 			//string tableName, 
 			//params string[] columns
@@ -118,12 +118,22 @@ namespace Academy
 			{
 				table.Columns.Add(reader.GetName(i));
 			}
+			//table.Columns.Add("Дни обучения");
+
 			while (reader.Read())
 			{
 				DataRow row = table.NewRow();
 				for (int i = 0; i < reader.FieldCount; i++)
 				{
 					row[i] = reader[i];
+				}
+				//if (row["learning_days"] != null)
+				try
+				{
+					row["learning_days"] = BitSetToDays(Convert.ToByte(row["learning_days"]));
+				}
+				catch (Exception e)
+				{
 				}
 				table.Rows.Add(row);
 			}
@@ -243,7 +253,7 @@ END
 			dgvStudents.DataSource = null;
 			SqlCommand cmd = new SqlCommand();
 			cmd.Connection = connection;
-			if(cbDirection.SelectedItem != null)cmd.Parameters.Add("@direction", cbDirection.SelectedItem);
+			if (cbDirection.SelectedItem != null) cmd.Parameters.Add("@direction", cbDirection.SelectedItem);
 			if (rbStudents.Checked)
 			{
 				cmd.CommandText = @"
@@ -253,7 +263,7 @@ JOIN Groups		ON Students.[group]=Groups.group_id
 JOIN Directions ON Groups.direction=Directions.direction_id";
 				if (cbDirection.SelectedItem != null) cmd.CommandText +=
 @" WHERE	Directions.direction_name=@direction
-"; 
+";
 			}
 			if (rbGroups.Checked)
 			{
@@ -261,8 +271,8 @@ JOIN Directions ON Groups.direction=Directions.direction_id";
 SELECT	group_name, direction_name
 FROM	Groups	
 JOIN Directions ON Groups.direction=Directions.direction_id";
-				if(cbDirection.SelectedItem != null) cmd.CommandText+=
-@" WHERE	Directions.direction_name=@direction
+				if (cbDirection.SelectedItem != null) cmd.CommandText +=
+ @" WHERE	Directions.direction_name=@direction
 ";
 			}
 			connection.Open();
@@ -308,11 +318,11 @@ JOIN Directions ON Groups.direction=Directions.direction_id";
 		{
 			//SelectDataFromTable(dataGridViewGroups, "Groups", "group_name", "direction");
 			string commandLine = $@"
-SELECT group_name, direction_name 
+SELECT group_name, learning_days, direction_name 
 FROM Groups JOIN Directions ON direction=direction_id
 ";
 			if (cbDirectionOnGroupTab.SelectedIndex != 0)
-				commandLine+= $@"WHERE direction_name='{cbDirectionOnGroupTab.SelectedItem}'";
+				commandLine += $@"WHERE direction_name='{cbDirectionOnGroupTab.SelectedItem}'";
 			SelectDataFromTable(dataGridViewGroups, commandLine);
 			lblGroupsCount.Text = $"Количество групп: {dataGridViewGroups.Rows.Count - 1}";
 		}
@@ -323,13 +333,17 @@ FROM Groups JOIN Directions ON direction=direction_id
 			//LoadDataToComboBox(add.CBDirection, "Directions", "direction_name", "Выберите направление обучения");
 			//LoadDataToComboBox(add.CBLearningForm, "LearningForms", "form_name", "Выберите форму обучения");
 			//LoadDataToComboBox(add.CBLearningTime, "LearningTimes", "time_name", "Выберите время обучения");
+
 			DialogResult result = add.ShowDialog();
-			if (result == DialogResult.OK)
-			{
-				//TableStorage storage = new TableStorage();
-				//storage.GetDataFromBase("Groups,Directions", "group_name,direction_name")
-				cbDirectionOnGroupTab_SelectedIndexChanged(sender, e);
-			}
+			//if (result == DialogResult.OK)
+			//{
+			//	//TableStorage storage = new TableStorage();
+			//	//storage.GetDataFromBase("Groups,Directions", "group_name,direction_name")
+			//	cbDirectionOnGroupTab_SelectedIndexChanged(sender, e);
+			//}
+			//TableStorage storage;
+			//storage.GetDataFromBase("Groups,Directions")
+			cbDirectionOnGroupTab_SelectedIndexChanged(sender, e);
 		}
 
 		private void btnDelete_Click(object sender, EventArgs e)
@@ -337,8 +351,27 @@ FROM Groups JOIN Directions ON direction=direction_id
 			TableStorage storage = new TableStorage();
 			storage.GetDataFromBase("Groups,Directions", "group_name, direction_name", "direction=direction_id");
 			dataGridViewGroups.DataSource = storage.Set.Tables[0];
-
+			foreach (DataGridViewCell cell in dataGridViewGroups.SelectedCells)
+			{
+				dataGridViewGroups.Rows.RemoveAt(cell.RowIndex);
+			}
 			storage.Adapter.Update(storage.Set);
+		}
+		private string BitSetToDays(byte bitset)
+		{
+			string[] week = { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" };
+			string days = "";
+			for (int i = 0; i < week.Length; i++)
+			{
+				byte day = 1;
+				day <<= i;
+				if ((day & bitset) != 0)
+				{
+					int day_index = (int)Math.Log(day & bitset, 2);
+					days += week[day_index] + ",";
+				}
+			}
+			return days;
 		}
 	}
 }

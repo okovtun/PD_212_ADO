@@ -119,7 +119,7 @@ namespace Academy
 			string group_name = "";
 			if (cbLearningForm.SelectedItem.ToString() != "Годичные курсы")
 			{
-				if (cbLearningForm.SelectedItem.ToString() == "Полустационар") group_name += clbWeek.SelectedItem.ToString();
+				if (cbLearningForm.SelectedItem.ToString() == "Полустационар") group_name += clbWeek.SelectedItem.ToString() == "Сб" ? "S" : "V";
 				//if (cbDirection.SelectedItem.ToString() == "Разработка программного обеспечения")
 				{
 					//DataRow[] rows = set.Tables["Directions"].Select("direction_name='Разработка программного обеспечения'");
@@ -154,6 +154,8 @@ namespace Academy
 			//AND		form_name = {cbLearningForm.SelectedItem.ToString()}
 			//"
 			//				);
+			int selectedIndexInDirection = cbDirection.SelectedIndex;
+			string directionName = cbDirection.SelectedItem?.ToString();
 
 			cbDirection.Items.Clear();
 			if (cbLearningForm.SelectedIndex != 0)
@@ -169,6 +171,24 @@ AND		LearningFormsDirectionsRelation.direction		= Directions.direction_id
 AND		form_name = '{cbLearningForm.SelectedItem.ToString()}'
 "
 								);
+			//cbDirection.SelectedIndex = selectedIndexInDirection < cbDirection.Items.Count ? selectedIndexInDirection : -1;
+			bool badDirection = false;
+			if (selectedIndexInDirection < cbDirection.Items.Count)
+			{
+				cbDirection.SelectedIndex = selectedIndexInDirection;
+			}
+			else
+			{
+				badDirection = true;
+			}
+			if (directionName != cbDirection.SelectedItem?.ToString()) badDirection = true;
+			if(badDirection)
+			{
+				cbDirection.SelectedIndex = -1;
+				cbDirection.Text = "Выберите направление обучения";
+				MessageBox.Show(this, "На данной фломе обучения нет такого направления", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				cbDirection.Select();
+			}
 		}
 
 		private void clbWeek_SelectedIndexChanged(object sender, EventArgs e)
@@ -184,9 +204,9 @@ AND		form_name = '{cbLearningForm.SelectedItem.ToString()}'
 		bool AllCombosOK()
 		{
 			string message = "";
-			if (cbLearningForm.SelectedIndex == 0) message = "Выберите форму обучения";
+			if (cbLearningForm.SelectedItem.ToString() == "Выберите форму обучения") message = "Выберите форму обучения";
 			else if (cbDirection.SelectedItem == null || cbDirection.SelectedItem.ToString() == "Выберите направление обучения") message = "Выберите направление обучения";
-			else if (cbTime.SelectedIndex == 0) message = "Выберите время обучения";
+			else if (cbTime.SelectedItem.ToString() == "Выберите время обучения") message = "Выберите время обучения";
 			if (message.Length > 0)
 			{
 				MessageBox.Show(this, message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -230,14 +250,21 @@ AND		form_name = '{cbLearningForm.SelectedItem.ToString()}'
 			////storage.Adapter.InsertCommand.ExecuteNonQuery();
 			//storage.Insert(insert_cmd);
 
-			DataRow row = storage.Set.Tables["Groups"].NewRow();
-			row["group_name"] = tbGroupName.Text;
-			row["direction"] = storage.Set.Tables["Directions"].Select($"direction_name='{cbDirection.SelectedItem.ToString()}'")[0]["direction_id"];
-			row["learning_time"] = storage.Set.Tables["LearningTimes"].Select($"time_name='{cbTime.SelectedItem.ToString()}'")[0]["time_id"];
-			row["learning_days"] = GetBitSet();
-			storage.Set.Tables["Groups"].Rows.Add(row);
-			storage.Adapter.Update(storage.Set, "Groups");
-			this.Close();
+			if (storage.Set.Tables["Groups"].Select($"group_name = '{tbGroupName.Text}'").Length == 0)
+			{
+				DataRow row = storage.Set.Tables["Groups"].NewRow();
+				row["group_name"] = tbGroupName.Text;
+				row["direction"] = storage.Set.Tables["Directions"].Select($"direction_name='{cbDirection.SelectedItem.ToString()}'")[0]["direction_id"];
+				row["learning_time"] = storage.Set.Tables["LearningTimes"].Select($"time_name='{cbTime.SelectedItem.ToString()}'")[0]["time_id"];
+				row["learning_days"] = GetBitSet();
+				storage.Set.Tables["Groups"].Rows.Add(row);
+				storage.Adapter.Update(storage.Set, "Groups");
+				this.Close();
+			}
+			else
+			{
+				MessageBox.Show(this, "Такая группа уже есть", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
 		}
 
 	}
