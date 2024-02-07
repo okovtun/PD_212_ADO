@@ -38,12 +38,12 @@
 			this.dgvStudents = new System.Windows.Forms.DataGridView();
 			this.cbGroup = new System.Windows.Forms.ComboBox();
 			this.tabPageGroups = new System.Windows.Forms.TabPage();
+			this.btnDelete = new System.Windows.Forms.Button();
 			this.lblGroupsCount = new System.Windows.Forms.Label();
 			this.cbDirectionOnGroupTab = new System.Windows.Forms.ComboBox();
 			this.btnGroupAdd = new System.Windows.Forms.Button();
 			this.dataGridViewGroups = new System.Windows.Forms.DataGridView();
 			this.tabPageTeacheres = new System.Windows.Forms.TabPage();
-			this.btnDelete = new System.Windows.Forms.Button();
 			this.tabControl.SuspendLayout();
 			this.tabPageStudents.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvStudents)).BeginInit();
@@ -171,6 +171,16 @@
 			this.tabPageGroups.TabIndex = 2;
 			this.tabPageGroups.Text = "Группы";
 			// 
+			// btnDelete
+			// 
+			this.btnDelete.Location = new System.Drawing.Point(606, 6);
+			this.btnDelete.Name = "btnDelete";
+			this.btnDelete.Size = new System.Drawing.Size(75, 23);
+			this.btnDelete.TabIndex = 4;
+			this.btnDelete.Text = "Удалить";
+			this.btnDelete.UseVisualStyleBackColor = true;
+			this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+			// 
 			// lblGroupsCount
 			// 
 			this.lblGroupsCount.AutoSize = true;
@@ -204,9 +214,13 @@
 			this.dataGridViewGroups.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
 			this.dataGridViewGroups.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.dataGridViewGroups.Location = new System.Drawing.Point(7, 40);
+			this.dataGridViewGroups.MultiSelect = false;
 			this.dataGridViewGroups.Name = "dataGridViewGroups";
+			this.dataGridViewGroups.ReadOnly = true;
+			this.dataGridViewGroups.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dataGridViewGroups.Size = new System.Drawing.Size(758, 357);
 			this.dataGridViewGroups.TabIndex = 0;
+			this.dataGridViewGroups.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewGroups_CellDoubleClick);
 			// 
 			// tabPageTeacheres
 			// 
@@ -217,16 +231,6 @@
 			this.tabPageTeacheres.TabIndex = 1;
 			this.tabPageTeacheres.Text = "Преподаватели";
 			this.tabPageTeacheres.UseVisualStyleBackColor = true;
-			// 
-			// btnDelete
-			// 
-			this.btnDelete.Location = new System.Drawing.Point(606, 6);
-			this.btnDelete.Name = "btnDelete";
-			this.btnDelete.Size = new System.Drawing.Size(75, 23);
-			this.btnDelete.TabIndex = 4;
-			this.btnDelete.Text = "Удалить";
-			this.btnDelete.UseVisualStyleBackColor = true;
-			this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
 			// 
 			// Form1
 			// 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define DEBUG_IN_CONSOLE
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,6 +13,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Runtime.InteropServices;
 
 namespace Academy
 {
@@ -317,12 +320,27 @@ JOIN Directions ON Groups.direction=Directions.direction_id";
 		private void cbDirectionOnGroupTab_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			//SelectDataFromTable(dataGridViewGroups, "Groups", "group_name", "direction");
-			string commandLine = $@"
-SELECT group_name, learning_days, direction_name 
-FROM Groups JOIN Directions ON direction=direction_id
-";
+			//			string commandLine = $@"
+			//SELECT group_name, learning_days, direction_name, [number_of_students]=SELECT COUNT(stud_id) FROM Students	JOIN Groups		ON [group]=group_id
+			//FROM Groups JOIN Directions ON direction=direction_id
+			//";
+
+			string condition = "";
 			if (cbDirectionOnGroupTab.SelectedIndex != 0)
-				commandLine += $@"WHERE direction_name='{cbDirectionOnGroupTab.SelectedItem}'";
+				condition += $@"WHERE direction_name='{cbDirectionOnGroupTab.SelectedItem}'";
+
+			string commandLine = $@"
+SELECT group_name, learning_days, direction_name, [number_of_students]=COUNT(stud_id)
+FROM Groups JOIN Directions ON direction=direction_id
+LEFT JOIN Students ON [group]=[group_id]
+{condition}
+GROUP BY [group_id], [group_name], [learning_days], [direction_name]
+ORDER BY [group_id]
+";
+
+
+			//if (cbDirectionOnGroupTab.SelectedIndex != 0)
+			//	commandLine += $@"WHERE direction_name='{cbDirectionOnGroupTab.SelectedItem}'";
 			SelectDataFromTable(dataGridViewGroups, commandLine);
 			lblGroupsCount.Text = $"Количество групп: {dataGridViewGroups.Rows.Count - 1}";
 		}
@@ -349,16 +367,30 @@ FROM Groups JOIN Directions ON direction=direction_id
 		private void btnDelete_Click(object sender, EventArgs e)
 		{
 			TableStorage storage = new TableStorage();
-			storage.GetDataFromBase("Groups,Directions", "group_name, direction_name", "direction=direction_id");
-			dataGridViewGroups.DataSource = storage.Set.Tables[0];
-			foreach (DataGridViewCell cell in dataGridViewGroups.SelectedCells)
-			{
-				dataGridViewGroups.Rows.RemoveAt(cell.RowIndex);
-			}
-			storage.Adapter.Update(storage.Set);
+			//storage.GetDataFromBase("Groups,Directions", "group_name, direction_name", "direction=direction_id");
+			//dataGridViewGroups.DataSource = storage.Set.Tables[0];
+			storage.GetDataFromBase("Groups");
+			//dataGridViewGroups.DataSource = storage.Set.Tables[0];
+			//foreach (DataGridViewCell cell in dataGridViewGroups.SelectedCells)
+			//{
+			//	storage.Set.Tables[0].Rows.RemoveAt(cell.RowIndex);
+			//	//MessageBox.Show(this, storage.Set.Tables[0].Rows[cell.RowIndex]["group_name"].ToString());
+			//	//dataGridViewGroups.Rows.RemoveAt(cell.RowIndex);
+			//}
+			//int deleted_rows = storage.Adapter.Update(storage.Set, "Groups");
+			//MessageBox.Show(deleted_rows.ToString(), "Info");
+			MessageBox.Show(this, dataGridViewGroups.SelectedRows[0].Cells["group_name"].Value.ToString(), "Info");
+			DataRow[] rows = storage.Set.Tables["Groups"].
+				Select($"group_name = '{dataGridViewGroups.SelectedRows[0].Cells["group_name"].Value.ToString()}'");
+			rows[0].Delete();
+			storage.Adapter.Update(storage.Set, "Groups");
+			cbDirectionOnGroupTab_SelectedIndexChanged(sender, e);
 		}
 		private string BitSetToDays(byte bitset)
 		{
+#if DEBUG_IN_CONSOLE
+			AllocConsole(); 
+#endif
 			string[] week = { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" };
 			string days = "";
 			for (int i = 0; i < week.Length; i++)
@@ -367,11 +399,52 @@ FROM Groups JOIN Directions ON direction=direction_id
 				day <<= i;
 				if ((day & bitset) != 0)
 				{
-					int day_index = (int)Math.Log(day & bitset, 2);
-					days += week[day_index] + ",";
+					//int day_index = (int)Math.Log(day & bitset, 2);
+					//days += week[day_index] + ",";
+					days += week[i] + ",";
+#if DEBUG_IN_CONSOLE
+					//Console.Write(day_index + "\t"); 
+#endif
 				}
 			}
+#if DEBUG_IN_CONSOLE
+			Console.WriteLine(); 
+			for (int i = 0; i < week.Length; i++)
+			{
+				byte day = 1;
+				day <<= i;
+				if ((day & bitset) != 0)
+				{
+					//int day_index = (int)Math.Log(day & bitset, 2);
+					Console.Write(i + "\t");
+					//days += week[day_index] + ",";
+				}
+			}
+			Console.WriteLine("\n-----------------------------\n"); 
+#endif
 			return days;
 		}
+
+		private void dataGridViewGroups_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+		{
+			TableStorage storage = new TableStorage();
+			storage.GetDataFromBase("Groups");
+			//MessageBox.Show(dataGridViewGroups.SelectedRows[0].Cells["group_name"].Value.ToString(), "Info");
+			DataRow[] rows = storage.Set.Tables["Groups"].Select($"group_name='{dataGridViewGroups.SelectedRows[0].Cells["group_name"].Value.ToString()}'");
+			AddGroup addGroup = new AddGroup
+				(
+				this,
+				rows[0]["group_name"].ToString(),
+				Convert.ToByte(rows[0]["direction"]),
+				Convert.ToByte(rows[0]["learning_time"]),
+				Convert.ToByte(rows[0]["learning_days"])
+				);
+			addGroup.ShowDialog(this);
+		}
+#if DEBUG_IN_CONSOLE
+		[DllImport("kernel32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		static extern bool AllocConsole(); 
+#endif
 	}
 }
